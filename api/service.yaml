@@ -3,10 +3,10 @@ apiVersion: v1
 metadata:
   name: api-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: api-container
   ports:
   - protocol: TCP
-    port: 8000
-    targetPort: 8000
+    port: 10050
+    targetPort: 10050

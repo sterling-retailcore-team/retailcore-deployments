@@ -21,5 +21,11 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+        env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: redis_password
         ports:
         - containerPort: 6379
