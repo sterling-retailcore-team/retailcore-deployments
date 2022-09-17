@@ -17,52 +17,47 @@ spec:
       containers:
         - name: sterling-user-api
           image: prunedge/sterling-user-api
-          command: ["gunicorn --bind 0.0.0.0:10050 core.asgi -w 4 -k uvicorn.workers.UvicornWorker"]
+          # command: ["/bin/sh", "gunicorn --bind 0.0.0.0:10050 core.asgi -w 4 -k uvicorn.workers.UvicornWorker"]
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
           ports:
             - containerPort: 10050
           env:
-            - name: DB_USER
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: db-credentials
-                  key: user
+                  name: api-secrets
+                  key: database_url
 
-            - name: DB_PASSWORD
+            - name: REDIS_URL 
               valueFrom:
                 secretKeyRef:
-                  name: db-credentials
-                  key: password
-
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-credentials
-                  key: db_name
+                  name: api-secrets
+                  key: redis_url
 
             - name: ACCESS_KEY_AWS
               valueFrom:
                 secretKeyRef:
-                  name: api-credentials
+                  name: api-secrets
                   key: aws_access_key
 
             - name: ACCESS_SECRET_AWS
               valueFrom:
                 secretKeyRef:
-                  name: api-credentials
+                  name: api-secrets
                   key: aws_secret_key
 
             - name: SENDGRID_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: api-credentials
+                  name: api-secrets
                   key: sendgrid_api_key
-
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: api-credentials
-                  key: database_url
 
             - name: SECRET_KEY
               valueFrom:
@@ -71,26 +66,40 @@ spec:
                   key: SECRET_KEY
 
             - name: DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: api-credentials
-                  key: DATABASE
+              value: "postgres"
 
+            - name: SQL_ENGINE 
+              value: "django.db.backends.postgresql"
 
-#  SQL_ENGINE: "django.db.backends.postgresql"
-#  DATABASE_URL: ""
-#  REDIS_URL: "redis://default:redispw@redis:6379"
-#  AWS_SQS_QUEUE: "sterling-dev-queue"
-#  FLOWER_BASIC_AUTH: "admin:user_admin"
-#  APP_NAME: "sterling-auth"
-#  ACCESS_BUCKET_NAME_AWS: "sterling-retail-dev"
-#  AWS_S3_REGION_NAME: "eu-west-3"
-#  AWS_S3_CUSTOM_DOMAIN: "d1booj4nx6xvp.cloudfront.net"
-#  CLOUDFRONT_ID: "E2EXJ9QGGNL7G4"
-#  SMTP_HOST: "smtp.sendgrid.net"
-#  SENDER_EMAIL: "noreply@prunedge.com"
-#  CLIENT_URL: "https://sterling.netlify.app"
-#  SENTRY_DSN: ""
+            - name: AWS_SQS_QUEUE 
+              value: "sterling-dev-queue"
 
+            - name: FLOWER_BASIC_AUTH 
+              value: "admin:user_admin"
 
+            - name: APP_NAME 
+              value: "sterling-auth"
 
+            - name: ACCESS_BUCKET_NAME_AWS 
+              value: "sterling-retail-dev"
+
+            - name: AWS_S3_REGION_NAME 
+              value: "eu-west-3"
+
+            - name: AWS_S3_CUSTOM_DOMAIN 
+              value: "d1booj4nx6xvp.cloudfront.net"
+
+            - name: CLOUDFRONT_ID 
+              value: "E2EXJ9QGGNL7G4"
+            
+            - name: SMTP_HOST 
+              value: "smtp.sendgrid.net"
+
+            - name: SENDER_EMAIL 
+              value: "noreply@prunedge.com"
+
+            - name: CLIENT_URL 
+              value: "https://sterling.netlify.app"
+
+            - name: SENTRY_DSN 
+              value: ""

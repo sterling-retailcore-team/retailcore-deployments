@@ -21,11 +21,14 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+          limits:
+            cpu: "250m"
+            memory: "300Mi"
         env:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: db-credentials
+                name: api-secrets
                 key: redis_password
         ports:
         - containerPort: 6379
