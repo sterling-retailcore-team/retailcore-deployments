@@ -16,15 +16,86 @@ spec:
     spec:
       containers:
       - name: flower
-        image: profmcdan/django-starter-api:v0
-        command: ['celery', 'flower', '-A', 'core']
+        image: prunedge/sterling-user-api
+        command: ['celery','-A', 'core', 'flower' ]
         ports:
           - containerPort: 5555
-        env:
-          - name: REDIS_HOST
-            value: redis-service
-          - name: FLOWER_BASIC_AUTH
-            value: admin:useradmin
         resources:
-          limits:
-            cpu: 100m
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+        env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: database_url
+
+            - name: ACCESS_KEY_AWS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: aws_access_key
+
+            - name: ACCESS_SECRET_AWS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: aws_secret_key
+
+            - name: SENDGRID_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: sendgrid_api_key
+
+            - name: SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: api-credentials
+                  key: SECRET_KEY
+
+            - name: REDIS_URL
+              value: redis-service
+
+            - name: DATABASE
+              value: "postgres"
+
+            - name: SQL_ENGINE 
+              value: "django.db.backends.postgresql"
+
+            - name: AWS_SQS_QUEUE 
+              value: "sterling-dev-queue"
+
+            - name: FLOWER_BASIC_AUTH 
+              value: "admin:user_admin"
+
+            - name: APP_NAME 
+              value: "sterling-auth"
+
+            - name: ACCESS_BUCKET_NAME_AWS 
+              value: "sterling-retail-dev"
+
+            - name: AWS_S3_REGION_NAME 
+              value: "eu-west-3"
+
+            - name: AWS_S3_CUSTOM_DOMAIN 
+              value: "d1booj4nx6xvp.cloudfront.net"
+
+            - name: CLOUDFRONT_ID 
+              value: "E2EXJ9QGGNL7G4"
+            
+            - name: SMTP_HOST 
+              value: "smtp.sendgrid.net"
+
+            - name: SENDER_EMAIL 
+              value: "noreply@prunedge.com"
+
+            - name: CLIENT_URL 
+              value: "https://sterling.netlify.app"
+
+            - name: SENTRY_DSN 
+              value: ""

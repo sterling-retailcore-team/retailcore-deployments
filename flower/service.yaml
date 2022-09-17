@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: flower-service
 spec:
+  type: LoadBalancer
   selector:
     pod: celery-flower
   ports:
-  - port: 5555
-  type: NodePort
+  - protocol: TCP
+    port: 5555
+    targetPort: 5555
